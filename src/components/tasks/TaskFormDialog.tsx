@@ -1,4 +1,4 @@
-import { useForm, Controller } from "react-hook-form";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -7,11 +7,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { TASK_STATUS, STATU_LEVEL } from "@/redux/features/tasks";
 import {
   Select,
   SelectContent,
@@ -19,12 +16,39 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  PRIORITY_LEVEL,
+  STATUS_LEVEL,
+  TASK_PRIORITY,
+  TASK_STATUS,
+  type ITask,
+} from "@/redux/features/tasks";
+import { addTask } from "@/redux/features/tasks/task.slice";
+import { useAppDispatch } from "@/redux/hook";
+import { Controller, useForm } from "react-hook-form";
 
-export function TaskFormDialog({ open, mode, onClose }) {
+
+type TDialogMode = 'edit' | 'create' 
+
+interface IProps {
+
+  open: boolean ,
+  mode: TDialogMode ,
+  onClose: () => void;
+}
+
+export function TaskFormDialog({ open, mode, onClose }:IProps) {
   const { register, handleSubmit, control } = useForm();
 
-  const onSubmit = (values) => {
-    console.log(values);
+
+  const dispatch = useAppDispatch()
+
+  const onSubmit = (values:ITask[]
+  ) => {
+    console.log(values); 
+
+    dispatch(addTask(values))
     onClose();
   };
 
@@ -88,7 +112,7 @@ export function TaskFormDialog({ open, mode, onClose }) {
                     <SelectContent>
                       {TASK_STATUS.map((status) => (
                         <SelectItem value={status}>
-                          {STATU_LEVEL[status]}
+                          {STATUS_LEVEL[status]}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -107,6 +131,13 @@ export function TaskFormDialog({ open, mode, onClose }) {
                     <SelectTrigger>
                       <SelectValue placeholder="Select priority" />
                     </SelectTrigger>
+                    <SelectContent>
+                      {TASK_PRIORITY.map((priority) => (
+                        <SelectItem value={priority}>
+                          {PRIORITY_LEVEL[priority]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
                 )}
               />

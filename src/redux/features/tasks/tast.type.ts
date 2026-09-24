@@ -1,1 +1,0 @@
-export type TTaskType = "pending" | "in-progress" | "done";

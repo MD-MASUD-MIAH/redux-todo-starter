@@ -1,0 +1,5 @@
+import type { RootState } from "@/redux/store";
+
+export const selectAlTasks = (state: RootState) => state.tasks;
+
+export const selectTotalCount = (state: RootState) => state.tasks.length;

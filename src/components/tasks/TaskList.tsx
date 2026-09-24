@@ -1,10 +1,19 @@
-import { TaskItem } from "./TaskItem";
 import { Card } from "@/components/ui/card";
+import {
+  selectAlTasks,
+  selectTotalCount,
+} from "@/redux/features/tasks/task.selector";
+import { useAppSelector } from "@/redux/hook";
 import { ClipboardListIcon, FilterIcon } from "lucide-react";
+import { TaskItem } from "./TaskItem";
 
-export function TaskList({ onEdit }) {
-  const tasks = [];
-  const total = 0;
+interface IProps {
+  onEdit: (id: string) => void;
+}
+
+export function TaskList({ onEdit }: IProps) {
+  const tasks = useAppSelector(selectAlTasks);
+  const total = useAppSelector(selectTotalCount);
   const isFiltering = false;
 
   if (total === 0) {
@@ -33,8 +42,8 @@ export function TaskList({ onEdit }) {
 
   return (
     <div className="flex flex-col gap-3">
-      {tasks.map((task) => (
-        <TaskItem key={task.id} task={task} onEdit={onEdit} />
+      {tasks.flat().map((task, index) => (
+        <TaskItem key={task.id || index} task={task} onEdit={onEdit} />
       ))}
     </div>
   );

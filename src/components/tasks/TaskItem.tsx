@@ -1,8 +1,7 @@
-import { formatDistanceToNow } from "date-fns";
-import { MoreHorizontalIcon, PencilIcon, Trash2Icon } from "lucide-react";
-import { toast } from "sonner";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { formatDistanceToNow } from "date-fns";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,22 +12,39 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { PriorityBadge } from "./PriorityBadge";
 import { cn } from "@/lib/utils";
+import {
+  STATUS_LEVEL,
+  TASK_STATUS,
+  type ITask,
+  type TTaskStatus,
+} from "@/redux/features/tasks";
+import { deleteTask } from "@/redux/features/tasks/task.slice";
+import { useAppDispatch } from "@/redux/hook";
+import { MoreHorizontalIcon, PencilIcon, Trash2Icon } from "lucide-react";
+import { toast } from "sonner";
+import { PriorityBadge } from "./PriorityBadge";
 
-const STATUS_DOT = {
+const STATUS_DOT: Record<TTaskStatus, string> = {
   pending: "bg-slate-400",
   "in-progress": "bg-blue-500",
   done: "bg-emerald-500",
 };
 
-export function TaskItem({ task, onEdit }) {
+interface IProps {
+  task: ITask;
+  onEdit: (id: string) => void;
+}
+export function TaskItem({ task, onEdit }: IProps) {
   const handleStatusChange = (value: string) => {
     console.log(value);
   };
 
+  const dispatch = useAppDispatch();
+
   const handleDelete = () => {
     toast.warning("Task deleted", { description: task.title });
+    dispatch(deleteTask(task.id));
   };
 
   return (
@@ -39,11 +55,11 @@ export function TaskItem({ task, onEdit }) {
             aria-hidden
             className={cn(
               "inline-block h-2 w-2 rounded-full",
-              // STATUS_DOT[task.status],
+              STATUS_DOT[task.status],
             )}
           />
           <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            {/* {STATUS_LABEL[task.status]} */}
+            {STATUS_LEVEL[task.status]}
           </span>
           <span className="text-xs text-muted-foreground">·</span>
           <span className="text-xs text-muted-foreground">
@@ -83,11 +99,11 @@ export function TaskItem({ task, onEdit }) {
             value={task.status}
             onValueChange={handleStatusChange}
           >
-            {/* {TASK_STATUSES.map((s) => (
+            {TASK_STATUS.map((s) => (
               <DropdownMenuRadioItem key={s} value={s}>
-                {STATUS_LABEL[s]}
+                {STATUS_LEVEL[s]}
               </DropdownMenuRadioItem>
-            ))} */}
+            ))}
           </DropdownMenuRadioGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={() => onEdit(task.id)}>
