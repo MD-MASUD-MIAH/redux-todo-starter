@@ -22,33 +22,59 @@ import {
   STATUS_LEVEL,
   TASK_PRIORITY,
   TASK_STATUS,
+  taskFormDefaultValue,
   type ITask,
 } from "@/redux/features/tasks";
-import { addTask } from "@/redux/features/tasks/task.slice";
-import { useAppDispatch } from "@/redux/hook";
+import { selectTaskById } from "@/redux/features/tasks/task.selector";
+import { addTask, updateTask } from "@/redux/features/tasks/task.slice";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
+import type { RootState } from "@/redux/store";
+import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
 
-
-type TDialogMode = 'edit' | 'create' 
+type TDialogMode = "edit" | "create";
 
 interface IProps {
-
-  open: boolean ,
-  mode: TDialogMode ,
+  open: boolean;
+  mode: TDialogMode;
   onClose: () => void;
+  editingId: string | null;
 }
 
-export function TaskFormDialog({ open, mode, onClose }:IProps) {
-  const { register, handleSubmit, control } = useForm();
+export function TaskFormDialog({ open, mode, onClose, editingId }: IProps) {
+  const { register, handleSubmit, control, reset } = useForm<ITask>();
 
+  const dispatch = useAppDispatch();
+  const editing = useAppSelector((state: RootState) =>
+    editingId ? selectTaskById(state, editingId) : undefined,
+  );
 
-  const dispatch = useAppDispatch()
+  useEffect(() => {
+    if (!open) return;
+    if (mode === "edit" && editing) {
+      reset({
+        title: editing?.title,
+        description: editing?.description,
+        status: editing?.status,
+        priority: editing?.priority,
+      });
+    } else {
+      reset(taskFormDefaultValue);
+    }
+  }, [editing, mode, open, reset]);
 
-  const onSubmit = (values:ITask[]
-  ) => {
-    console.log(values); 
+  const onSubmit = (values: ITask) => {
+    console.log(values);
+    if (mode === "edit" && editing) {
+      dispatch(updateTask({ id: editing.id, change: values }));
 
-    dispatch(addTask(values))
+      toast.success("Task Updated Successfully");
+    } else {
+      dispatch(addTask(values));
+      toast.success("Task create Successfully");
+    }
+
     onClose();
   };
 

@@ -1,14 +1,13 @@
-import { useCallback, useState } from "react";
-import { PlusIcon } from "lucide-react";
+import { FiltersBar } from "@/components/filters/FiltersBar";
+import { TaskFormDialog } from "@/components/tasks/TaskFormDialog";
+import { TaskList } from "@/components/tasks/TaskList";
+import { TaskStats } from "@/components/tasks/TaskStats";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
-import { TaskList } from "@/components/tasks/TaskList";
-import {
-  TaskFormDialog,
-  type DialogMode,
-} from "@/components/tasks/TaskFormDialog";
-import { TaskStats } from "@/components/tasks/TaskStats";
-import { FiltersBar } from "@/components/filters/FiltersBar";
+import { PlusIcon } from "lucide-react";
+import { useCallback, useState } from "react";
+
+type DialogMode = "create" | "edit";
 
 interface DialogState {
   open: boolean;

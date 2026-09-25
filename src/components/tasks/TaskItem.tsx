@@ -19,7 +19,7 @@ import {
   type ITask,
   type TTaskStatus,
 } from "@/redux/features/tasks";
-import { deleteTask } from "@/redux/features/tasks/task.slice";
+import { deleteTask, updateStatus } from "@/redux/features/tasks/task.slice";
 import { useAppDispatch } from "@/redux/hook";
 import { MoreHorizontalIcon, PencilIcon, Trash2Icon } from "lucide-react";
 import { toast } from "sonner";
@@ -35,16 +35,23 @@ interface IProps {
   task: ITask;
   onEdit: (id: string) => void;
 }
-export function TaskItem({ task, onEdit }: IProps) {
-  const handleStatusChange = (value: string) => {
-    console.log(value);
-  };
 
+export function TaskItem({ task, onEdit }: IProps) {
   const dispatch = useAppDispatch();
 
+  const handleStatusChange = (value: string) => {
+    const status = value as TTaskStatus;
+    console.log(value);
+
+    dispatch(updateStatus({ id: task.id, status: status }));
+
+    toast.success("Task Status Updated");
+  };
+
   const handleDelete = () => {
-    toast.warning("Task deleted", { description: task.title });
+   
     dispatch(deleteTask(task.id));
+     toast.warning("Task deleted", { description: task.title });
   };
 
   return (
